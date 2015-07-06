@@ -264,7 +264,14 @@ def add_instance_to_room(tiled_object, room_filename, tmx_filename):
 
     tilewidth, tileheight = get_tile_size(tmx_filename)
 
-    instances = Element("instances")
+    existing_instances_element = root.find('instances')
+    if existing_instances_element is None:
+        print("1")
+        instances = Element("instances")
+    else:
+        print("2")
+        instances = existing_instances_element
+
     room_name = room_filename.split('/')[-1].split(".")[0]
 
     elem = Element("instance",
@@ -281,7 +288,9 @@ def add_instance_to_room(tiled_object, room_filename, tmx_filename):
     instances.append(elem)
 
     instances = fromstring(prettify(instances))
-    root.append(instances)
+
+    if existing_instances_element is None:
+        root.append(instances)
 
     appendfile = room_filename
     ElementTree(root).write(appendfile, encoding="utf-8", xml_declaration=True)

@@ -14461,4 +14461,4 @@
   <PhysicsWorldPixToMeters>0.100000001490116</PhysicsWorldPixToMeters>
 <instances>
   <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0002" objName="obj_solid" rotation="0" scaleX="29" scaleY="4" x="128" y="768" />
-</instances></room>
+<instance code="" colour="4294967295" locked="0" name="inst_crate_land_0041" objName="obj_solid" rotation="0" scaleX="10" scaleY="8" x="480" y="512" /></instances></room>
