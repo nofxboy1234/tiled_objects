@@ -2,28 +2,6 @@ from xml.etree.ElementTree import Element, SubElement, parse, ElementTree, XMLPa
 from xml.etree.ElementTree import tostring, fromstring
 from xml.dom import minidom
 
-# root = Element("root")
-# print root.tag
-
-# elem = SubElement(root, "one", first="1", second="2")
-# print elem.get("first")
-# print elem.keys()
-# print elem.items()
-
-# print elem.get("third", "default")
-# elem.set("third", 3)
-# print elem.get("third", "default")
-
-# SubElement(root, "two")
-
-# SubElement(root, "three")
-
-# for node in root:
-# 	print node
-
-# parentmap = dict((c, p) for p in root.getiterator() for c in p)
-# print parentmap
-
 def prettify(elem):
     rough_string = tostring(elem, 'utf-8')
     reparsed = minidom.parseString(rough_string)
@@ -57,14 +35,12 @@ def create_GMS_sprite(name, width, height, output_dir):
     elem.text = "0"
 
     elem = SubElement(root, "bbox_right")
-    # elem.text = "31"
     elem.text = "%s" % (int(width) - 1)
 
     elem = SubElement(root, "bbox_top")
     elem.text = "0"
 
     elem = SubElement(root, "bbox_bottom")
-    # elem.text = "31"
     elem.text = "%s" % (int(height) - 1)
 
     elem = SubElement(root, "HTile")
@@ -74,8 +50,6 @@ def create_GMS_sprite(name, width, height, output_dir):
     elem.text = "0"
 
     elem = SubElement(root, "TextureGroups")
-    # texture_group = SubElement(elem, "TextureGroup")
-    # texture_group.text = 0
     texture_group = SubElement(elem, "TextureGroup0")
     texture_group.text = "0"
 
@@ -83,30 +57,23 @@ def create_GMS_sprite(name, width, height, output_dir):
     elem.text = "0"
 
     elem = SubElement(root, "width")
-    # elem.text = "32"
     elem.text = "%s" % (width)
 
     elem = SubElement(root, "height")
-    # elem.text = "32"
     elem.text = "%s" % (height)
 
     elem = SubElement(root, "frames")
     frame = SubElement(elem, "frame", index="0")
-    # frame.text = "images\sprite0_0.png"
-    # Create single frame sprite
     frame.text = "images\%s_0.png" % (name)
 
     # Prettify and convert back to XML
     root = fromstring(prettify(root))
 
-    # write to file
-    # write_file = open("C:/Users/dylan/tiled_maps/sprite0.sprite.gmx", "w")
     write_file = open("%s/%s.sprite.gmx" % (output_dir, name), "w")
     ElementTree(root).write(write_file, encoding="utf-8", xml_declaration=True)
     write_file.close()
 
 def get_tiled_objects(filename):
-    # filename = "C:/Users/dylan/tiled_maps/crate_land.tmx"
 
     tree = ElementTree(file=filename)
     elem = tree.getroot()
@@ -130,12 +97,7 @@ def get_tiled_objects(filename):
         for tiled_object in tiled_object_list:
             tiled_object_dict = {}
 
-            # name = tiled_object.get('name')
-            # if name is None:
-            # tiled_object_dict['name'] = tiled_object.get('name')
             tiled_object_dict['name'] = tiled_objectgroup.get('name')
-            # else:
-            #     tiled_object_dict['name'] = name
             tiled_object_dict['type'] = tiled_objectgroup.get('name')
 
             tiled_object_dict['id'] = tiled_object.get('id')
@@ -187,12 +149,6 @@ def create_GMS_object(name, sprite_name, output_dir):
 
     elem = SubElement(root, "persistent")
     elem.text = "0"
-
-    # elem = SubElement(root, "parentName")
-    # elem.text = "&lt;undefined&gt;"
-
-    # elem = SubElement(root, "maskName")
-    # elem.text = "&lt;undefined&gt;"
 
     parentName = SubElement(root, "parentName")
 
@@ -246,16 +202,12 @@ def create_GMS_object(name, sprite_name, output_dir):
     maskName = root.find("maskName")
     maskName.text = "#undefined#"
 
-    # write to file
-    # appendfile = open("C:/Users/dylan/tiled_maps/object0.object.gmx", "w")
     appendfile = open("%s/%s.object.gmx" % (output_dir, name), "w")
     ElementTree(root).write(appendfile, encoding="utf-8", xml_declaration=True)
     appendfile.close()
 
-    # editfile = open("C:/Users/dylan/tiled_maps/object0.object.gmx", "r")
     editfile = open("%s/%s.object.gmx" % (output_dir, name), "r")
     data = editfile.readlines()
-    # print(data)
     editfile.close()
 
     parentName_index = data.index("  <parentName>#undefined#</parentName>\n")
@@ -266,42 +218,51 @@ def create_GMS_object(name, sprite_name, output_dir):
     maskName_value = data[maskName_index]
     data[maskName_index] = maskName_value.replace("#undefined#", "&lt;undefined&gt;")
 
-    # editfile = open("C:/Users/dylan/tiled_maps/object0.object.gmx", "w")
     editfile = open("%s/%s.object.gmx" % (output_dir, name), "w")
     editfile.writelines(data)
     editfile.close()
 
-def add_instance_to_room(tiled_object, room_filename, tmx_filename):
-    """ Add tiled objects to an existing room created by GMSTiled """
-
-    # filename = "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx"
-    # tree = parse(room_filename)
+def get_tile_size(tmx_filename):
     tree = ElementTree(file=tmx_filename)
     root = tree.getroot()
 
     tilewidth = root.get('tilewidth')
     tileheight = root.get('tileheight')
-    print("root.tag: %s" % root.tag)
-    print("tilewidth: %s tileheight: %s" % (tilewidth, tileheight))
+
+    return tilewidth, tileheight
+
+def clear_instances_from_room(room_filename):
+    """ Remove the instances element """
 
     tree = ElementTree(file=room_filename)
     root = tree.getroot()
 
-    # tilewidth = root.find('map').get('tilewidth')
-    # tileheight = root.find('map').get('tileheight')
+    instances_element = root.find('instances')
+    if instances_element is not None:
+        root.remove(instances_element)
 
+    ElementTree(root).write(room_filename, encoding="utf-8", xml_declaration=True)
 
-    # all_items = root.getiterator()
-    # print all_items
-    # return
+def add_instance_to_room(tiled_object, room_filename, tmx_filename):
+    """ Add tiled objects to an existing room created by GMSTiled """
 
-    # root_str = "".join(tostring(root).split())
-    # print root_str
-    # root = fromstring(root_str)
+    # tree = ElementTree(file=tmx_filename)
+    # root = tree.getroot()
 
-    print("root.find('instances'): %s" %  root.find('instances'))
-    if root.find('instances') is not None:
-        root.remove('instances')
+    # tilewidth = root.get('tilewidth')
+    # tileheight = root.get('tileheight')
+    # # print("root.tag: %s" % root.tag)
+    # # print("tilewidth: %s tileheight: %s" % (tilewidth, tileheight))
+
+    tree = ElementTree(file=room_filename)
+    root = tree.getroot()
+
+    # # print("root.tag: %s" %(root.tag))
+    # instances_element = root.find('instances')
+    # if instances_element is not None:
+    #     root.remove(instances_element)
+
+    tilewidth, tileheight = get_tile_size(tmx_filename)
 
     instances = Element("instances")
     room_name = room_filename.split('/')[-1].split(".")[0]
@@ -319,22 +280,16 @@ def add_instance_to_room(tiled_object, room_filename, tmx_filename):
                         rotation = "0")
     instances.append(elem)
 
-    # for i in instances:
-    #     print("i: %s" % i)
-
     instances = fromstring(prettify(instances))
     root.append(instances)
 
-    # root.append(instances)
-    # root = fromstring(prettify(root))
-
-    # write to file
-    # appendfile = "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx"
     appendfile = room_filename
     ElementTree(root).write(appendfile, encoding="utf-8", xml_declaration=True)
 
 def main():
     object_groups = get_tiled_objects("C:/Users/dylan/tiled_maps/crate_land.tmx")
+
+    clear_instances_from_room("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx")
 
     # object_groups = {group_name: [{'name': '',},]}
     for group in object_groups:
