@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="160" height="90" tilewidth="32" tileheight="32" nextobjectid="42">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="160" height="90" tilewidth="32" tileheight="32" nextobjectid="44">
  <tileset firstgid="1" name="countryside" tilewidth="32" tileheight="32">
   <image source="../countryside.png" width="64" height="64"/>
  </tileset>
@@ -14413,5 +14413,11 @@
   </properties>
   <object id="2" x="128" y="768" width="928" height="128"/>
   <object id="41" x="480" y="512" width="320" height="256"/>
+ </objectgroup>
+ <objectgroup color="#ff0000" name="enemies">
+  <properties>
+   <property name="sprite" value="spr_enemies"/>
+  </properties>
+  <object id="43" x="1120" y="416" width="32" height="32"/>
  </objectgroup>
 </map>
