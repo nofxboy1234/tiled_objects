@@ -14460,31 +14460,5 @@
   <PhysicsWorldGravityY>10</PhysicsWorldGravityY>
   <PhysicsWorldPixToMeters>0.100000001490116</PhysicsWorldPixToMeters>
 <instances>
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0001" objName="object0" rotation="0" scaleX="29" scaleY="4" x="128" y="768" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0002" objName="object0" rotation="0" scaleX="5" scaleY="4" x="128" y="640" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0003" objName="object0" rotation="0" scaleX="4" scaleY="4" x="160" y="512" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0004" objName="object0" rotation="0" scaleX="1" scaleY="4" x="288" y="544" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0005" objName="object0" rotation="0" scaleX="4" scaleY="1" x="0" y="864" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0006" objName="object0" rotation="0" scaleX="1" scaleY="1" x="256" y="480" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0007" objName="object0" rotation="0" scaleX="1" scaleY="1" x="544" y="352" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0008" objName="object0" rotation="0" scaleX="10" scaleY="8" x="480" y="512" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0009" objName="object0" rotation="0" scaleX="1" scaleY="2" x="448" y="704" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0010" objName="object0" rotation="0" scaleX="1" scaleY="1" x="416" y="736" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0011" objName="object0" rotation="0" scaleX="7" scaleY="4" x="544" y="384" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0012" objName="object0" rotation="0" scaleX="1" scaleY="3" x="768" y="416" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0013" objName="object0" rotation="0" scaleX="1" scaleY="3" x="800" y="480" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0014" objName="object0" rotation="0" scaleX="1" scaleY="3" x="512" y="416" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0015" objName="object0" rotation="0" scaleX="2" scaleY="1" x="640" y="352" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0016" objName="object0" rotation="0" scaleX="1" scaleY="1" x="1056" y="416" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0017" objName="object0" rotation="0" scaleX="3" scaleY="7" x="1056" y="448" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0018" objName="object0" rotation="0" scaleX="3" scaleY="7" x="960" y="544" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0019" objName="object0" rotation="0" scaleX="1" scaleY="2" x="928" y="704" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0020" objName="object0" rotation="0" scaleX="2" scaleY="1" x="992" y="512" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0021" objName="object0" rotation="0" scaleX="1" scaleY="1" x="1024" y="480" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0022" objName="object0" rotation="0" scaleX="12" scaleY="5" x="1088" y="768" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0023" objName="object0" rotation="0" scaleX="1" scaleY="3" x="1056" y="800" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0024" objName="object0" rotation="0" scaleX="5" scaleY="3" x="1472" y="800" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0025" objName="object0" rotation="0" scaleX="1" scaleY="1" x="1312" y="736" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0026" objName="object0" rotation="0" scaleX="2" scaleY="3" x="1088" y="672" />
-  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0027" objName="object0" rotation="0" scaleX="1" scaleY="2" x="1152" y="704" />
+  <instance code="" colour="4294967295" locked="0" name="inst_crate_land_0002" objName="obj_solid" rotation="0" scaleX="29" scaleY="4" x="128" y="768" />
 </instances></room>

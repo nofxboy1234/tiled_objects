@@ -29,7 +29,7 @@ def prettify(elem):
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent="  ")
 
-def create_GMS_sprite():
+def create_GMS_sprite(name, width, height, output_dir):
     root = Element("sprite")
 
     elem = SubElement(root, "type")
@@ -57,13 +57,15 @@ def create_GMS_sprite():
     elem.text = "0"
 
     elem = SubElement(root, "bbox_right")
-    elem.text = "31"
+    # elem.text = "31"
+    elem.text = "%s" % (int(width) - 1)
 
     elem = SubElement(root, "bbox_top")
     elem.text = "0"
 
     elem = SubElement(root, "bbox_bottom")
-    elem.text = "31"
+    # elem.text = "31"
+    elem.text = "%s" % (int(height) - 1)
 
     elem = SubElement(root, "HTile")
     elem.text = "0"
@@ -81,52 +83,98 @@ def create_GMS_sprite():
     elem.text = "0"
 
     elem = SubElement(root, "width")
-    elem.text = "32"
+    # elem.text = "32"
+    elem.text = "%s" % (width)
 
     elem = SubElement(root, "height")
-    elem.text = "32"
+    # elem.text = "32"
+    elem.text = "%s" % (height)
 
     elem = SubElement(root, "frames")
     frame = SubElement(elem, "frame", index="0")
-    frame.text = "images\sprite0_0.png"
+    # frame.text = "images\sprite0_0.png"
+    # Create single frame sprite
+    frame.text = "images\%s_0.png" % (name)
 
-    # write to file
-    # filename = "C:/Users/dylan/tiled_maps/sprite0.sprite.gmx"
-    # ElementTree(treetop).write(filename)
-
-    # Convert back to XML
+    # Prettify and convert back to XML
     root = fromstring(prettify(root))
 
-    # append to file
-    appendfile = open("C:/Users/dylan/tiled_maps/sprite0.sprite.gmx", "w")
-    ElementTree(root).write(appendfile, encoding="utf-8", xml_declaration=True)
-    appendfile.close()
+    # write to file
+    # write_file = open("C:/Users/dylan/tiled_maps/sprite0.sprite.gmx", "w")
+    write_file = open("%s/%s.sprite.gmx" % (output_dir, name), "w")
+    ElementTree(root).write(write_file, encoding="utf-8", xml_declaration=True)
+    write_file.close()
 
-def get_tiled_objects():
-    filename = "C:/Users/dylan/tiled_maps/crate_land.tmx"
-    # tree = parse(filename)
+def get_tiled_objects(filename):
+    # filename = "C:/Users/dylan/tiled_maps/crate_land.tmx"
+
     tree = ElementTree(file=filename)
     elem = tree.getroot()
 
-    tiled_objects = []
-    tiled_objectgroup = elem.find('objectgroup')
-    for tiled_object in tiled_objectgroup:
-        tiled_object_dict = {}
-        tiled_object_dict['id'] = tiled_object.get('id')
-        tiled_object_dict['x'] = tiled_object.get('x')
-        tiled_object_dict['y'] = tiled_object.get('y')
-        tiled_object_dict['width'] = tiled_object.get('width')
-        tiled_object_dict['height'] = tiled_object.get('height')
+    tiled_objectgroups = elem.findall('objectgroup')
+    groups = {}
+    for tiled_objectgroup in tiled_objectgroups:
+        # Check if there's a sprite set for the objectgroup
+        properties = tiled_objectgroup.find('properties')
+        objectgroup_sprite = ''
+        # Check tiled custom properties
+        if properties is not None:
+            for prop in properties:
+                name = prop.get('name')
+                if name == 'sprite':
+                    value = prop.get('value')
+                    objectgroup_sprite = value
 
-        tiled_objects.append(tiled_object_dict)
+        tiled_object_list = tiled_objectgroup.findall('object')
+        objects = []
+        for tiled_object in tiled_object_list:
+            tiled_object_dict = {}
 
-    return tiled_objects
+            # name = tiled_object.get('name')
+            # if name is None:
+            # tiled_object_dict['name'] = tiled_object.get('name')
+            tiled_object_dict['name'] = tiled_objectgroup.get('name')
+            # else:
+            #     tiled_object_dict['name'] = name
+            tiled_object_dict['type'] = tiled_objectgroup.get('name')
 
-def create_GMS_object():
+            tiled_object_dict['id'] = tiled_object.get('id')
+            tiled_object_dict['x'] = tiled_object.get('x')
+            tiled_object_dict['y'] = tiled_object.get('y')
+            tiled_object_dict['width'] = tiled_object.get('width')
+            tiled_object_dict['height'] = tiled_object.get('height')
+
+            # Check if there's a sprite set for the object
+            # This will override any objectgroup sprite set
+            properties = tiled_object.find('properties')
+            object_sprite = ''
+            # Check tiled custom properties
+            if properties is not None:
+                for prop in properties:
+                    name = prop.get('name')
+                    if name == 'sprite':
+                        value = prop.get('value')
+                        object_sprite = value
+
+            # If there's an object_sprite, use this instead o9f objectgroup_sprite
+            if object_sprite != '':
+                tiled_object_dict['sprite'] = object_sprite
+            else:
+                tiled_object_dict['sprite'] = objectgroup_sprite
+
+            objects.append(tiled_object_dict)
+        # Add a group to the groups dict
+        # groups = {group_name: [{'name': '',},]}
+        groups[tiled_objectgroup.get('name')] = objects
+
+    return groups
+
+def create_GMS_object(name, sprite_name, output_dir):
     root = Element("object")
 
     elem = SubElement(root, "spriteName")
-    elem.text = "sprite0"
+    # elem.text = "sprite0"
+    elem.text = "%s" % (sprite_name)
 
     elem = SubElement(root, "solid")
     elem.text = "0"
@@ -188,7 +236,7 @@ def create_GMS_object():
     elem = SubElement(root, "PhysicsShapePoints")
 
 
-    # Convert back to XML
+    # Prettify and convert back to XML
     root = fromstring(prettify(root))
 
     # re-set text for special char texts
@@ -199,11 +247,13 @@ def create_GMS_object():
     maskName.text = "#undefined#"
 
     # write to file
-    appendfile = open("C:/Users/dylan/tiled_maps/object0.object.gmx", "w")
+    # appendfile = open("C:/Users/dylan/tiled_maps/object0.object.gmx", "w")
+    appendfile = open("%s/%s.object.gmx" % (output_dir, name), "w")
     ElementTree(root).write(appendfile, encoding="utf-8", xml_declaration=True)
     appendfile.close()
 
-    editfile = open("C:/Users/dylan/tiled_maps/object0.object.gmx", "r")
+    # editfile = open("C:/Users/dylan/tiled_maps/object0.object.gmx", "r")
+    editfile = open("%s/%s.object.gmx" % (output_dir, name), "r")
     data = editfile.readlines()
     # print(data)
     editfile.close()
@@ -216,15 +266,30 @@ def create_GMS_object():
     maskName_value = data[maskName_index]
     data[maskName_index] = maskName_value.replace("#undefined#", "&lt;undefined&gt;")
 
-    editfile = open("C:/Users/dylan/tiled_maps/object0.object.gmx", "w")
+    # editfile = open("C:/Users/dylan/tiled_maps/object0.object.gmx", "w")
+    editfile = open("%s/%s.object.gmx" % (output_dir, name), "w")
     editfile.writelines(data)
     editfile.close()
 
-def add_instances_to_room(tiled_objects):
-    filename = "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx"
-    # tree = parse(filename)
-    tree = ElementTree(file=filename)
+def add_instance_to_room(tiled_object, room_filename, tmx_filename):
+    """ Add tiled objects to an existing room created by GMSTiled """
+
+    # filename = "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx"
+    # tree = parse(room_filename)
+    tree = ElementTree(file=tmx_filename)
     root = tree.getroot()
+
+    tilewidth = root.get('tilewidth')
+    tileheight = root.get('tileheight')
+    print("root.tag: %s" % root.tag)
+    print("tilewidth: %s tileheight: %s" % (tilewidth, tileheight))
+
+    tree = ElementTree(file=room_filename)
+    root = tree.getroot()
+
+    # tilewidth = root.find('map').get('tilewidth')
+    # tileheight = root.find('map').get('tileheight')
+
 
     # all_items = root.getiterator()
     # print all_items
@@ -234,23 +299,28 @@ def add_instances_to_room(tiled_objects):
     # print root_str
     # root = fromstring(root_str)
 
+    print("root.find('instances'): %s" %  root.find('instances'))
+    if root.find('instances') is not None:
+        root.remove('instances')
+
     instances = Element("instances")
-    room_name = filename.split('/')[-1].split(".")[0]
-    count = 0
-    for tiled_object in tiled_objects:
-        count += 1
-        elem = Element("instance",
-                            objName="object0",
-                            x = tiled_object['x'],
-                            y = tiled_object['y'],
-                            name = "inst_%s_%04d" % (room_name, count),
-                            locked = "0",
-                            code = "",
-                            scaleX = str(int(tiled_object['width'])/32),
-                            scaleY = str(int(tiled_object['height'])/32),
-                            colour = "4294967295",
-                            rotation = "0")
-        instances.append(elem)
+    room_name = room_filename.split('/')[-1].split(".")[0]
+
+    elem = Element("instance",
+                        objName = "obj_%s" % (tiled_object['name']),
+                        x = tiled_object['x'],
+                        y = tiled_object['y'],
+                        name = "inst_%s_%04d" % (room_name, int(tiled_object['id'])),
+                        locked = "0",
+                        code = "",
+                        scaleX = str(int(tiled_object['width'])/int(tilewidth)),
+                        scaleY = str(int(tiled_object['height'])/int(tileheight)),
+                        colour = "4294967295",
+                        rotation = "0")
+    instances.append(elem)
+
+    # for i in instances:
+    #     print("i: %s" % i)
 
     instances = fromstring(prettify(instances))
     root.append(instances)
@@ -259,13 +329,28 @@ def add_instances_to_room(tiled_objects):
     # root = fromstring(prettify(root))
 
     # write to file
-    appendfile = "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx"
+    # appendfile = "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx"
+    appendfile = room_filename
     ElementTree(root).write(appendfile, encoding="utf-8", xml_declaration=True)
 
 def main():
-    create_GMS_sprite()
-    create_GMS_object()
-    tiled_objects = get_tiled_objects()
-    add_instances_to_room(tiled_objects)
+    object_groups = get_tiled_objects("C:/Users/dylan/tiled_maps/crate_land.tmx")
+
+    # object_groups = {group_name: [{'name': '',},]}
+    for group in object_groups:
+        for tiled_object in object_groups[group]:
+            print(str(tiled_object))
+            create_GMS_sprite("spr_%s" % (tiled_object['name']),
+                                tiled_object['width'],
+                                tiled_object['height'],
+                                "C:/Users/dylan/tiled_maps")
+
+            create_GMS_object("obj_%s" % (tiled_object['name']),
+                                        tiled_object['sprite'],
+                                        "C:/Users/dylan/tiled_maps")
+
+            add_instance_to_room(tiled_object,
+                                "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx",
+                                "C:/Users/dylan/tiled_maps/crate_land.tmx")
 
 main()
