@@ -7,7 +7,7 @@ def prettify(elem):
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent="  ")
 
-def create_GMS_sprite(name, width, height, output_dir):
+def create_GMS_sprite(name, width, height, output_dir, sprite):
     root = Element("sprite")
 
     elem = SubElement(root, "type")
@@ -64,12 +64,12 @@ def create_GMS_sprite(name, width, height, output_dir):
 
     elem = SubElement(root, "frames")
     frame = SubElement(elem, "frame", index="0")
-    frame.text = "images\%s_0.png" % (name)
+    frame.text = "images\%s_0.png" % (sprite)
 
     # Prettify and convert back to XML
     root = fromstring(prettify(root))
 
-    write_file = open("%s/%s.sprite.gmx" % (output_dir, name), "w")
+    write_file = open("%s/spr_%s.sprite.gmx" % (output_dir, name), "w")
     ElementTree(root).write(write_file, encoding="utf-8", xml_declaration=True)
     write_file.close()
 
@@ -118,7 +118,7 @@ def get_tiled_objects(filename):
                         value = prop.get('value')
                         object_sprite = value
 
-            # If there's an object_sprite, use this instead o9f objectgroup_sprite
+            # If there's an object_sprite, use this instead of objectgroup_sprite
             if object_sprite != '':
                 tiled_object_dict['sprite'] = object_sprite
             else:
@@ -131,12 +131,11 @@ def get_tiled_objects(filename):
 
     return groups
 
-def create_GMS_object(name, sprite_name, output_dir):
+def create_GMS_object(name, output_dir):
     root = Element("object")
 
     elem = SubElement(root, "spriteName")
-    # elem.text = "sprite0"
-    elem.text = "%s" % (sprite_name)
+    elem.text = "spr_%s" % (name)
 
     elem = SubElement(root, "solid")
     elem.text = "0"
@@ -202,11 +201,11 @@ def create_GMS_object(name, sprite_name, output_dir):
     maskName = root.find("maskName")
     maskName.text = "#undefined#"
 
-    appendfile = open("%s/%s.object.gmx" % (output_dir, name), "w")
+    appendfile = open("%s/obj_%s.object.gmx" % (output_dir, name), "w")
     ElementTree(root).write(appendfile, encoding="utf-8", xml_declaration=True)
     appendfile.close()
 
-    editfile = open("%s/%s.object.gmx" % (output_dir, name), "r")
+    editfile = open("%s/obj_%s.object.gmx" % (output_dir, name), "r")
     data = editfile.readlines()
     editfile.close()
 
@@ -218,7 +217,7 @@ def create_GMS_object(name, sprite_name, output_dir):
     maskName_value = data[maskName_index]
     data[maskName_index] = maskName_value.replace("#undefined#", "&lt;undefined&gt;")
 
-    editfile = open("%s/%s.object.gmx" % (output_dir, name), "w")
+    editfile = open("%s/obj_%s.object.gmx" % (output_dir, name), "w")
     editfile.writelines(data)
     editfile.close()
 
@@ -304,14 +303,14 @@ def main():
     for group in object_groups:
         for tiled_object in object_groups[group]:
             print(str(tiled_object))
-            create_GMS_sprite("spr_%s" % (tiled_object['name']),
+            create_GMS_sprite(tiled_object['name'],
                                 tiled_object['width'],
                                 tiled_object['height'],
-                                "C:/Users/dylan/tiled_maps")
+                                "C:/Users/dylan/tiled_maps",
+                                tiled_object['sprite'])
 
-            create_GMS_object("obj_%s" % (tiled_object['name']),
-                                        tiled_object['sprite'],
-                                        "C:/Users/dylan/tiled_maps")
+            create_GMS_object(tiled_object['name'],
+                                "C:/Users/dylan/tiled_maps")
 
             add_instance_to_room(tiled_object,
                                 "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx",
