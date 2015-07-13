@@ -3,22 +3,26 @@ from xml.etree.ElementTree import tostring, fromstring
 from xml.dom import minidom
 
 class Tiled_ObjectGroup(object):
-    def __init__(self, tiled_name, tiled_sprite):
-        self.tiled_name = tiled_name
-        self.tiled_sprite = tiled_sprite
+    def __init__(self, group_name):
+        self.group_name = group_name
+        self.sprite = "spr_%s" % (group_name)
 
 class Tiled_Object(Tiled_ObjectGroup):
-    def __init__(self, tiled_name, tiled_type,
-                tiled_id, tiled_x, tiled_y,
-                tiled_width, tiled_height, tiled_sprite):
-        super(Tiled_Object, self).__init__(tiled_name, tiled_sprite)
+    def __init__(self, group_name, tiled_id, x, y, width, height,
+                        object_name="", tiled_type="",
+                        sprite=""):
+        super(Tiled_Object, self).__init__(group_name)
 
-        self.tiled_type = tiled_type
-        self.tiled_id = tiled_id
-        self.tiled_x = tiled_x
-        self.tiled_y = tiled_y
-        self.tiled_width = tiled_width
-        self.tiled_height = tiled_height
+        self.id = tiled_id
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.object_name = object_name
+        self.type = tiled_type
+
+        if sprite != "":
+            self.sprite = sprite
 
 def prettify(elem):
     rough_string = tostring(elem, 'utf-8')

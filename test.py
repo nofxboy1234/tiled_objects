@@ -47,13 +47,20 @@ class SecurityDoor(object):
         """
         return getattr(self.door, attr)
 
-sdoor1 = SecurityDoor(1, 'closed')
-sdoor1.locked = False
-sdoor1.open()
-print(sdoor1.status)
-print(sdoor1.colour)
+# sdoor1 = SecurityDoor(1, 'closed')
+# sdoor1.locked = False
+# sdoor1.open()
+# print(sdoor1.status)
+# print(sdoor1.colour)
 
-# to = Tiled_Object('enemy_01', 'enemy',
-#                                 '01', 19, 19,
-#                                 32, 32, 'spr_enemies')
-# print(to.tiled_name)
+to = Tiled_Object('enemies', 01, 19, 19, 32, 32,
+                    object_name="enemy01")
+print("group_name: %s" % to.group_name)
+print("sprite: %s" % to.sprite)
+print("id: %s" % to.id)
+print("x: %s" % to.x)
+print("y: %s" % to.y)
+print("width: %s" % to.width)
+print("height: %s" % to.height)
+print("object_name: %s" % to.object_name)
+print("type: %s" % to.type)
