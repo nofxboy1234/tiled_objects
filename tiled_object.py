@@ -2,6 +2,24 @@ from xml.etree.ElementTree import Element, SubElement, parse, ElementTree, XMLPa
 from xml.etree.ElementTree import tostring, fromstring
 from xml.dom import minidom
 
+class Tiled_ObjectGroup(object):
+    def __init__(self, tiled_name, tiled_sprite):
+        self.tiled_name = tiled_name
+        self.tiled_sprite = tiled_sprite
+
+class Tiled_Object(Tiled_ObjectGroup):
+    def __init__(self, tiled_name, tiled_type,
+                tiled_id, tiled_x, tiled_y,
+                tiled_width, tiled_height, tiled_sprite):
+        super(Tiled_Object, self).__init__(tiled_name, tiled_sprite)
+
+        self.tiled_type = tiled_type
+        self.tiled_id = tiled_id
+        self.tiled_x = tiled_x
+        self.tiled_y = tiled_y
+        self.tiled_width = tiled_width
+        self.tiled_height = tiled_height
+
 def prettify(elem):
     rough_string = tostring(elem, 'utf-8')
     reparsed = minidom.parseString(rough_string)
@@ -316,4 +334,4 @@ def main():
                                 "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx",
                                 "C:/Users/dylan/tiled_maps/crate_land.tmx")
 
-main()
+# main()
