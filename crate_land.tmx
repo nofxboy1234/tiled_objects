@@ -14418,9 +14418,9 @@
   <properties>
    <property name="sprite" value="spr_enemies"/>
   </properties>
-  <object id="43" x="1120" y="416" width="32" height="32">
+  <object id="43" name="bob" x="1120" y="416" width="32" height="32">
    <properties>
-    <property name="sprite" value="spr_enemies2"/>
+    <property name="sprite" value="spr_bob"/>
    </properties>
   </object>
   <object id="44" x="1440" y="736" width="32" height="32"/>
