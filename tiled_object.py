@@ -258,7 +258,8 @@ def create_GMS_object(tiled_object, output_dir):
     elem.text = "0"
 
     elem = SubElement(root, "visible")
-    elem.text = "-1"
+    # elem.text = "-1"
+    elem.text = "0"
 
     elem = SubElement(root, "depth")
     elem.text = "0"
