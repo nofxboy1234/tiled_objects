@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="160" height="90" tilewidth="32" tileheight="32" nextobjectid="48">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="160" height="90" tilewidth="32" tileheight="32" nextobjectid="49">
  <tileset firstgid="1" name="countryside" tilewidth="32" tileheight="32">
   <image source="../countryside.png" width="64" height="64"/>
  </tileset>
@@ -14410,22 +14410,14 @@
  <objectgroup color="#0000ff" name="solid">
   <properties>
    <property name="sprite" value="spr_solid"/>
+   <property name="sprite_height" value="32"/>
+   <property name="sprite_width" value="32"/>
   </properties>
-  <object id="2" x="128" y="768" width="928" height="128"/>
-  <object id="41" x="480" y="512" width="320" height="256"/>
+  <object id="48" x="480" y="384" width="320" height="128"/>
  </objectgroup>
  <objectgroup color="#ff0000" name="enemies">
   <properties>
    <property name="sprite" value="spr_enemies"/>
   </properties>
-  <object id="43" name="bob" x="1120" y="416" width="32" height="32">
-   <properties>
-    <property name="sprite" value="spr_bob"/>
-   </properties>
-  </object>
-  <object id="44" x="1440" y="736" width="32" height="32"/>
-  <object id="45" x="640" y="224" width="64" height="128"/>
-  <object id="46" x="320" y="736" width="32" height="32"/>
-  <object id="47" x="864" y="736" width="32" height="32"/>
  </objectgroup>
 </map>

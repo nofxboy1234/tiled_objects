@@ -1,6 +1,9 @@
 # TODO: Set room settings and view
 #       Add player object with code, toggle visibility
 
+import shutil
+import os.path
+
 from xml.etree.ElementTree import Element, SubElement, parse, ElementTree, XMLParser
 from xml.etree.ElementTree import tostring, fromstring
 from xml.dom import minidom
@@ -61,8 +64,8 @@ def create_GMS_sprite(tiled_object, output_dir):
     if name == "":
         name = tiled_object.group_name
 
-    width = tiled_object.width
-    height = tiled_object.height
+    width = tiled_object.sprite_width
+    height = tiled_object.sprite_height
     sprite = tiled_object.sprite
 
     root = Element("sprite")
@@ -140,7 +143,11 @@ def get_tiled_objects(filename):
     for tiled_objectgroup in tiled_objectgroups:
         # Check if there's a sprite set for the objectgroup
         properties = tiled_objectgroup.find('properties')
+
         objectgroup_sprite = ''
+        objectgroup_sprite_width = ''
+        objectgroup_sprite_height = ''
+
         # Check tiled custom properties
         if properties is not None:
             for prop in properties:
@@ -148,6 +155,12 @@ def get_tiled_objects(filename):
                 if name == 'sprite':
                     value = prop.get('value')
                     objectgroup_sprite = value
+                elif name == 'sprite_width':
+                    value = prop.get('value')
+                    objectgroup_sprite_width = value
+                elif name == 'sprite_height':
+                    value = prop.get('value')
+                    objectgroup_sprite_height = value
 
         tiled_object_list = tiled_objectgroup.findall('object')
         objects = []
@@ -185,7 +198,11 @@ def get_tiled_objects(filename):
             # Check if there's a sprite set for the object
             # This will override any objectgroup sprite set
             properties = tiled_object.find('properties')
+
             object_sprite = ''
+            object_sprite_width = ''
+            object_sprite_height = ''
+
             # Check tiled custom properties
             if properties is not None:
                 for prop in properties:
@@ -193,6 +210,12 @@ def get_tiled_objects(filename):
                     if name == 'sprite':
                         value = prop.get('value')
                         object_sprite = value
+                    elif name == 'sprite_width':
+                        value = prop.get('value')
+                        object_sprite_width = value
+                    elif name == 'sprite_height':
+                        value = prop.get('value')
+                        object_sprite_height = value
 
             # If there's an object_sprite, use this instead of objectgroup_sprite
             if object_sprite != '':
@@ -201,6 +224,16 @@ def get_tiled_objects(filename):
             else:
                 # tiled_object_dict['sprite'] = objectgroup_sprite
                 to.sprite = objectgroup_sprite
+
+            if object_sprite_width != '':
+                to.sprite_width = object_sprite_width
+            else:
+                to.sprite_width = objectgroup_sprite_width
+
+            if object_sprite_height != '':
+                to.sprite_height = object_sprite_height
+            else:
+                to.sprite_height = objectgroup_sprite_height
 
             # objects.append(tiled_object_dict)
             objects.append(to)
@@ -345,7 +378,7 @@ def add_instance_to_room(tiled_object, room_filename, tmx_filename):
     # if instances_element is not None:
     #     root.remove(instances_element)
 
-    tilewidth, tileheight = get_tile_size(tmx_filename)
+    # tilewidth, tileheight = get_tile_size(tmx_filename)
 
     existing_instances_element = root.find('instances')
     if existing_instances_element is None:
@@ -369,8 +402,8 @@ def add_instance_to_room(tiled_object, room_filename, tmx_filename):
                         name = "inst_%s_%04d" % (room_name, int(tiled_object.id)),
                         locked = "0",
                         code = "",
-                        scaleX = str(int(tiled_object.width)/int(tilewidth)),
-                        scaleY = str(int(tiled_object.height)/int(tileheight)),
+                        scaleX = str(int(tiled_object.width)/int(tiled_object.sprite_width)),
+                        scaleY = str(int(tiled_object.height)/int(tiled_object.sprite_height)),
                         colour = "4294967295",
                         rotation = "0")
     instances.append(elem)
@@ -383,9 +416,26 @@ def add_instance_to_room(tiled_object, room_filename, tmx_filename):
     appendfile = room_filename
     ElementTree(root).write(appendfile, encoding="utf-8", xml_declaration=True)
 
+def copy_to_gm_folders():
+    shutil.copyfile('C:/Users/dylan/tiled_maps/crate_land/images/countryside.png',
+        'C:/Users/dylan/Documents/GameMaker/Projects/Test/background/images/countryside.png')
+    shutil.copyfile('C:/Users/dylan/tiled_maps/crate_land/countryside.background.gmx',
+        'C:/Users/dylan/Documents/GameMaker/Projects/Test/background/countryside.background.gmx')
+
+    shutil.copyfile('C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx',
+        'C:/Users/dylan/Documents/GameMaker/Projects/Test/rooms/crate_land.room.gmx')
+
+    shutil.copyfile('C:/Users/dylan/tiled_maps/spr_solid_0.png',
+        'C:/Users/dylan/Documents/GameMaker/Projects/Test/sprites/images/spr_solid_0.png')
+    shutil.copyfile('C:/Users/dylan/tiled_maps/spr_solid.sprite.gmx',
+        'C:/Users/dylan/Documents/GameMaker/Projects/Test/sprites/spr_solid.sprite.gmx')
+    shutil.copyfile('C:/Users/dylan/tiled_maps/obj_solid.object.gmx',
+        'C:/Users/dylan/Documents/GameMaker/Projects/Test/objects/obj_solid.object.gmx')
+
 def main():
     object_groups = get_tiled_objects("C:/Users/dylan/tiled_maps/crate_land.tmx")
 
+    # if os.path.isfile("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx"):
     clear_instances_from_room("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx")
 
     # object_groups = {group_name: [{'name': '',},]}
@@ -411,5 +461,6 @@ def main():
             add_instance_to_room(tiled_object,
                                 "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx",
                                 "C:/Users/dylan/tiled_maps/crate_land.tmx")
+    copy_to_gm_folders()
 
 main()
