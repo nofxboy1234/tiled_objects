@@ -1,4 +1,4 @@
-# TODO: Set room settings and view
+# TODO:
 #       Add player object with code, toggle visibility
 
 import shutil
@@ -347,6 +347,36 @@ def get_tile_size(tmx_filename):
 
     return tilewidth, tileheight
 
+def set_room_settings(room_filename):
+    tree = ElementTree(file=room_filename)
+    root = tree.getroot()
+    # print("root.tag: %s" % root.tag)
+
+    element = root.find('speed')
+    element.text = "60"
+
+    element = root.find('enableViews')
+    element.text = "1"
+
+    views_element = root.find('views')
+    view_0 = views_element[0]
+    view_0.set("visible", "1")
+    view_0.set("wview", "1280")
+    view_0.set("hview", "720")
+    view_0.set("wport", "1280")
+    view_0.set("hport", "720")
+    view_0.set("objName", "obj_player")
+    view_0.set("hborder", "%s" % (1280/2))
+    view_0.set("vborder", "%s" % (720/2))
+    view_0.set("hspeed", "20")
+
+    # for e in root:
+    #     print e
+
+    write_file = open(room_filename, "w")
+    ElementTree(root).write(write_file, encoding="utf-8", xml_declaration=True)
+    write_file.close()
+
 def clear_instances_from_room(room_filename):
     """ Remove the instances element """
 
@@ -461,6 +491,8 @@ def main():
             add_instance_to_room(tiled_object,
                                 "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx",
                                 "C:/Users/dylan/tiled_maps/crate_land.tmx")
+
+    set_room_settings("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx")
     copy_to_gm_folders()
 
 main()
