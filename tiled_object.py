@@ -1,5 +1,5 @@
 # TODO:
-#       Add player object with code, toggle visibility
+#       Add objects with code
 
 import shutil
 import os.path
@@ -7,6 +7,14 @@ import os.path
 from xml.etree.ElementTree import Element, SubElement, parse, ElementTree, XMLParser
 from xml.etree.ElementTree import tostring, fromstring
 from xml.dom import minidom
+
+def enum(*sequential, **named):
+    enums = dict(zip(sequential, range(len(sequential))), **named)
+    return type('Enum', (), enums)
+
+event_types = enum('CREATE', 'DESTROY', 'ALARM', 'STEP', 'COLLISION',
+                    'KEYBOARD', 'MOUSE', 'OTHER', 'DRAW', 'KEY_PRESS',
+                    'KEY_RELEASE', 'ASYNCHRONOUS')
 
 class Tiled_ObjectGroup(object):
     def __init__(self, group_name):
@@ -53,6 +61,7 @@ class Tiled_Object(Tiled_ObjectGroup):
                         self.sprite
                         )
         return print_str
+
 
 def prettify(elem):
     rough_string = tostring(elem, 'utf-8')
@@ -463,37 +472,57 @@ def copy_to_gm_folders():
     shutil.copyfile('C:/Users/dylan/tiled_maps/obj_solid.object.gmx',
         'C:/Users/dylan/Documents/GameMaker/Projects/Test/objects/obj_solid.object.gmx')
 
+    shutil.copyfile('C:/Users/dylan/tiled_maps/obj_player.object.gmx',
+        'C:/Users/dylan/Documents/GameMaker/Projects/Test/objects/obj_player.object.gmx')
+
+def add_event_to_object(event_template, object_file, event_type, script_name):
+    tree = ElementTree(file=event_template)
+    event_root = tree.getroot()
+    event_root.set('eventtype', event_type)
+    # print("event_root.tag: %s" % event_root.tag)
+
+    action = event_root.find('action')
+    arguments = action.find('arguments')
+    arg_0 = arguments[0]
+    script = arg_0.find('script')
+    script.text = script_name
+
+    tree = ElementTree(file=object_file)
+    object_root = tree.getroot()
+    # print("object_root.tag: %s" % root.tag)
+
+    events = object_root.find('events')
+    event = events.append(event_root)
+
+    write_file = open(object_file, "w")
+    ElementTree(object_root).write(write_file, encoding="utf-8", xml_declaration=True)
+    write_file.close()
+
 def main():
     object_groups = get_tiled_objects("C:/Users/dylan/tiled_maps/crate_land.tmx")
 
     # if os.path.isfile("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx"):
     clear_instances_from_room("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx")
 
-    # object_groups = {group_name: [{'name': '',},]}
     for group in object_groups:
         for tiled_object in object_groups[group]:
             print(str(tiled_object))
-            # create_GMS_sprite(tiled_object['name'],
-            #                     tiled_object['width'],
-            #                     tiled_object['height'],
-            #                     "C:/Users/dylan/tiled_maps",
-            #                     tiled_object['sprite'])
             create_GMS_sprite(tiled_object,
                     "C:/Users/dylan/tiled_maps")
 
-            # create_GMS_object(tiled_object['name'],
-            #                     "C:/Users/dylan/tiled_maps")
             create_GMS_object(tiled_object,
                                 "C:/Users/dylan/tiled_maps")
 
-            # add_instance_to_room(tiled_object,
-            #                     "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx",
-            #                     "C:/Users/dylan/tiled_maps/crate_land.tmx")
             add_instance_to_room(tiled_object,
                                 "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx",
                                 "C:/Users/dylan/tiled_maps/crate_land.tmx")
 
+    add_event_to_object("C:/Users/dylan/tiled_maps/template_event.xml",
+        "C:/Users/dylan/tiled_maps/obj_player.object.gmx",
+        str(event_types.STEP), "obj_player_step")
+
     set_room_settings("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx")
+
     copy_to_gm_folders()
 
 main()
