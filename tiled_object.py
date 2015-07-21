@@ -1,5 +1,4 @@
-# TODO:
-#       Add objects with code
+# Design tile-based levels with Tiled and position objects in the level.
 
 import shutil
 import os.path
@@ -436,7 +435,7 @@ def add_instance_to_room(tiled_object, room_filename, tmx_filename):
         object_room_name = tiled_object.group_name
 
     elem = Element("instance",
-                        objName = "obj_%s" % (object_room_name),
+                        objName = "%s" % (object_room_name),
                         x = tiled_object.x,
                         y = tiled_object.y,
                         name = "inst_%s_%04d" % (room_name, int(tiled_object.id)),
@@ -465,15 +464,15 @@ def copy_to_gm_folders():
     shutil.copyfile('C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx',
         'C:/Users/dylan/Documents/GameMaker/Projects/Test/rooms/crate_land.room.gmx')
 
-    shutil.copyfile('C:/Users/dylan/tiled_maps/spr_solid_0.png',
-        'C:/Users/dylan/Documents/GameMaker/Projects/Test/sprites/images/spr_solid_0.png')
-    shutil.copyfile('C:/Users/dylan/tiled_maps/spr_solid.sprite.gmx',
-        'C:/Users/dylan/Documents/GameMaker/Projects/Test/sprites/spr_solid.sprite.gmx')
-    shutil.copyfile('C:/Users/dylan/tiled_maps/obj_solid.object.gmx',
-        'C:/Users/dylan/Documents/GameMaker/Projects/Test/objects/obj_solid.object.gmx')
+    # shutil.copyfile('C:/Users/dylan/tiled_maps/spr_solid_0.png',
+    #     'C:/Users/dylan/Documents/GameMaker/Projects/Test/sprites/images/spr_solid_0.png')
+    # shutil.copyfile('C:/Users/dylan/tiled_maps/spr_solid.sprite.gmx',
+    #     'C:/Users/dylan/Documents/GameMaker/Projects/Test/sprites/spr_solid.sprite.gmx')
+    # shutil.copyfile('C:/Users/dylan/tiled_maps/obj_solid.object.gmx',
+    #     'C:/Users/dylan/Documents/GameMaker/Projects/Test/objects/obj_solid.object.gmx')
 
-    shutil.copyfile('C:/Users/dylan/tiled_maps/obj_player.object.gmx',
-        'C:/Users/dylan/Documents/GameMaker/Projects/Test/objects/obj_player.object.gmx')
+    # shutil.copyfile('C:/Users/dylan/tiled_maps/obj_player.object.gmx',
+    #     'C:/Users/dylan/Documents/GameMaker/Projects/Test/objects/obj_player.object.gmx')
 
 def add_event_to_object(event_template, object_file, event_type, script_name):
     tree = ElementTree(file=event_template)
@@ -498,7 +497,53 @@ def add_event_to_object(event_template, object_file, event_type, script_name):
     ElementTree(object_root).write(write_file, encoding="utf-8", xml_declaration=True)
     write_file.close()
 
+def get_gm_objects(gm_project_file):
+    tree = ElementTree(file=gm_project_file)
+    assets_root = tree.getroot()
+
+    objects = assets_root.find('objects')
+
+
+    gm_object_list = objects.findall('object')
+    gm_objects = []
+    for gm_object in gm_object_list:
+        gm_objects.append(gm_object.text.split("\\")[1])
+
+    return gm_objects
+
+def add_gm_objects_to_tiled(tiled_project_file, gm_objects):
+    tree = ElementTree(file=tiled_project_file)
+    map_root = tree.getroot()
+
+    for gm_object in gm_objects:
+        elem = Element("objectgroup",
+                            color = "#0000ff",
+                            name = gm_object)
+        map_root.append(elem)
+
+    # map_root = fromstring(prettify(map_root))
+
+    tmx_file = open(tiled_project_file, "w")
+    ElementTree(map_root).write(tmx_file, encoding="utf-8", xml_declaration=True)
+    tmx_file.close()
+
+def get_sprite_size(project_filename, tiled_object):
+    sprite_filename = "%s/sprites/%s.sprite.gmx" % (project_filename.rsplit("/", 1)[0],
+                        tiled_object.group_name.replace("obj", "spr"))
+
+    tree = ElementTree(file=sprite_filename)
+    sprite_root = tree.getroot()
+
+    width = sprite_root.find('width').text
+    height = sprite_root.find('height').text
+
+    return width, height
+
 def main():
+    # gm_objects = get_gm_objects("C:/Users/dylan/Documents/GameMaker/Projects/Test/Test.project.gmx")
+    # add_gm_objects_to_tiled("C:/Users/dylan/tiled_maps/crate_land.tmx", gm_objects)
+    # return
+
     object_groups = get_tiled_objects("C:/Users/dylan/tiled_maps/crate_land.tmx")
 
     # if os.path.isfile("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx"):
@@ -507,19 +552,23 @@ def main():
     for group in object_groups:
         for tiled_object in object_groups[group]:
             print(str(tiled_object))
-            create_GMS_sprite(tiled_object,
-                    "C:/Users/dylan/tiled_maps")
+            # create_GMS_sprite(tiled_object,
+            #         "C:/Users/dylan/tiled_maps")
 
-            create_GMS_object(tiled_object,
-                                "C:/Users/dylan/tiled_maps")
+            # create_GMS_object(tiled_object,
+            #                     "C:/Users/dylan/tiled_maps")
+
+            tiled_object.sprite_width, tiled_object.sprite_height = \
+                get_sprite_size("C:/Users/dylan/Documents/GameMaker/Projects/Test/Test.project.gmx",
+                                    tiled_object)
 
             add_instance_to_room(tiled_object,
                                 "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx",
                                 "C:/Users/dylan/tiled_maps/crate_land.tmx")
 
-    add_event_to_object("C:/Users/dylan/tiled_maps/template_event.xml",
-        "C:/Users/dylan/tiled_maps/obj_player.object.gmx",
-        str(event_types.STEP), "obj_player_step")
+    # add_event_to_object("C:/Users/dylan/tiled_maps/template_event.xml",
+    #     "C:/Users/dylan/tiled_maps/obj_player.object.gmx",
+    #     str(event_types.STEP), "obj_player_step")
 
     set_room_settings("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx")
 
