@@ -515,11 +515,21 @@ def add_gm_objects_to_tiled(tiled_project_file, gm_objects):
     tree = ElementTree(file=tiled_project_file)
     map_root = tree.getroot()
 
+    # Get existing objects
+    existing_objects = map_root.findall('objectgroup')
+    existing_objects_names = []
+    for ob in existing_objects:
+        existing_objects_names.append(ob.get('name'))
+
+    # print(existing_objects_names)
+    # return
+
     for gm_object in gm_objects:
-        elem = Element("objectgroup",
-                            color = "#0000ff",
-                            name = gm_object)
-        map_root.append(elem)
+        if gm_object not in existing_objects_names:
+            elem = Element("objectgroup",
+                                color = "#0000ff",
+                                name = gm_object)
+            map_root.append(elem)
 
     # map_root = fromstring(prettify(map_root))
 

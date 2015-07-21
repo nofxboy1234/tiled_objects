@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="160" height="90" tilewidth="32" tileheight="32" nextobjectid="149">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="160" height="90" tilewidth="32" tileheight="32" nextobjectid="155">
  <tileset firstgid="1" name="countryside" tilewidth="32" tileheight="32">
   <image source="../countryside.png" width="64" height="64"/>
  </tileset>
@@ -28812,10 +28812,10 @@
   </data>
  </layer>
  <objectgroup color="#0000ff" name="obj_solid">
-  <object id="147" x="160" y="512" width="128" height="256"/>
-  <object id="148" x="288" y="544" width="32" height="128"/>
+  <object id="153" x="3616" y="864" width="672" height="160"/>
+  <object id="154" x="3424" y="896" width="192" height="128"/>
  </objectgroup>
  <objectgroup color="#0000ff" name="obj_player">
-  <object id="144" x="224" y="288" width="32" height="32"/>
+  <object id="150" x="3616" y="832" width="32" height="32"/>
  </objectgroup>
 </map>
