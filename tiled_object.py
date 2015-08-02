@@ -1,5 +1,9 @@
 # Design tile-based levels with Tiled and position objects in the level.
 
+# Workflow: add gm objects to tiled, layout objects, run gmsTiled, add tiled objects to gms room
+
+from PySide.QtGui import *
+
 import shutil
 import os.path
 
@@ -455,24 +459,15 @@ def add_instance_to_room(tiled_object, room_filename, tmx_filename):
     appendfile = room_filename
     ElementTree(root).write(appendfile, encoding="utf-8", xml_declaration=True)
 
-def copy_to_gm_folders():
-    shutil.copyfile('C:/Users/dylan/tiled_maps/crate_land/images/countryside.png',
-        'C:/Users/dylan/Documents/GameMaker/Projects/Test/background/images/countryside.png')
-    shutil.copyfile('C:/Users/dylan/tiled_maps/crate_land/countryside.background.gmx',
-        'C:/Users/dylan/Documents/GameMaker/Projects/Test/background/countryside.background.gmx')
+def copy_to_gm_folders(tiled_tileset_path, gms_background_path, gms_room_path,
+                        gms_project_path):
+    shutil.copyfile(tiled_tileset_path,
+        "%s/background/images/%s" % ('/'.join(gms_project_path.split('/')[:-1]), tiled_tileset_path.split('/')[-1]))
+    shutil.copyfile(gms_background_path,
+        "%s/background/%s" % ('/'.join(gms_project_path.split('/')[:-1]), gms_background_path.split('/')[-1]))
 
-    shutil.copyfile('C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx',
-        'C:/Users/dylan/Documents/GameMaker/Projects/Test/rooms/crate_land.room.gmx')
-
-    # shutil.copyfile('C:/Users/dylan/tiled_maps/spr_solid_0.png',
-    #     'C:/Users/dylan/Documents/GameMaker/Projects/Test/sprites/images/spr_solid_0.png')
-    # shutil.copyfile('C:/Users/dylan/tiled_maps/spr_solid.sprite.gmx',
-    #     'C:/Users/dylan/Documents/GameMaker/Projects/Test/sprites/spr_solid.sprite.gmx')
-    # shutil.copyfile('C:/Users/dylan/tiled_maps/obj_solid.object.gmx',
-    #     'C:/Users/dylan/Documents/GameMaker/Projects/Test/objects/obj_solid.object.gmx')
-
-    # shutil.copyfile('C:/Users/dylan/tiled_maps/obj_player.object.gmx',
-    #     'C:/Users/dylan/Documents/GameMaker/Projects/Test/objects/obj_player.object.gmx')
+    shutil.copyfile(gms_room_path,
+        "%s/rooms/%s" % ('/'.join(gms_project_path.split('/')[:-1]), gms_room_path.split('/')[-1]))
 
 def add_event_to_object(event_template, object_file, event_type, script_name):
     tree = ElementTree(file=event_template)
@@ -549,15 +544,21 @@ def get_sprite_size(project_filename, tiled_object):
 
     return width, height
 
-def main():
-    # gm_objects = get_gm_objects("C:/Users/dylan/Documents/GameMaker/Projects/Test/Test.project.gmx")
-    # add_gm_objects_to_tiled("C:/Users/dylan/tiled_maps/crate_land.tmx", gm_objects)
-    # return
+def gms_to_tiled(gms_project_path, tiled_project_path):
+    gm_objects = get_gm_objects(gms_project_path)
+    add_gm_objects_to_tiled(tiled_project_path, gm_objects)
 
-    object_groups = get_tiled_objects("C:/Users/dylan/tiled_maps/crate_land.tmx")
+    msgBox = QMessageBox()
+    msg = "Finished copying GMS objects to Tiled"
+    msgBox.setText(msg)
+    msgBox.exec_()
+
+def tiled_to_gms(tiled_project_path, gms_project_path, gms_room_path,
+                    tiled_tileset_path, gms_background_path,):
+    object_groups = get_tiled_objects(tiled_project_path)
 
     # if os.path.isfile("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx"):
-    clear_instances_from_room("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx")
+    clear_instances_from_room(gms_room_path)
 
     for group in object_groups:
         for tiled_object in object_groups[group]:
@@ -569,19 +570,26 @@ def main():
             #                     "C:/Users/dylan/tiled_maps")
 
             tiled_object.sprite_width, tiled_object.sprite_height = \
-                get_sprite_size("C:/Users/dylan/Documents/GameMaker/Projects/Test/Test.project.gmx",
+                get_sprite_size(gms_project_path,
                                     tiled_object)
 
             add_instance_to_room(tiled_object,
-                                "C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx",
-                                "C:/Users/dylan/tiled_maps/crate_land.tmx")
+                                gms_room_path,
+                                tiled_project_path)
 
     # add_event_to_object("C:/Users/dylan/tiled_maps/template_event.xml",
     #     "C:/Users/dylan/tiled_maps/obj_player.object.gmx",
     #     str(event_types.STEP), "obj_player_step")
 
-    set_room_settings("C:/Users/dylan/tiled_maps/crate_land/crate_land.room.gmx")
+    set_room_settings(gms_room_path)
 
-    copy_to_gm_folders()
+    copy_to_gm_folders(tiled_tileset_path, gms_background_path, gms_room_path,
+                         gms_project_path)
 
-main()
+    msgBox = QMessageBox()
+    msg = "Finished copying Tiled objects to GMS.\n"
+    msg += "Please import any backgrounds or rooms inside GMS\n"
+    msg += "if they don't exist already."
+    msgBox.setText(msg)
+    msgBox.exec_()
+

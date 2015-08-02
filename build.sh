@@ -1,0 +1,1 @@
+/c/Python27_x86/python setup.py build
